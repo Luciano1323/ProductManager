@@ -1,0 +1,11 @@
+[
+  {
+    "id": 1,
+    "title": "iPhone 12",
+    "description": "El último modelo de iPhone con pantalla Super Retina XDR y chip A14 Bionic.",
+    "price": 1099,
+    "thumbnail": "/images/iphone12.jpg",
+    "code": "IP12",
+    "stock": 20
+  }
+]

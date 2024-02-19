@@ -81,39 +81,4 @@ class ProductManager {
     }
 }
 
-const productManager = new ProductManager('productos.json');
-
-try {
-    const iphone12 = productManager.addProduct({
-        title: "iPhone 12",
-        description: "El último modelo de iPhone con pantalla Super Retina XDR y chip A14 Bionic.",
-        price: 999,
-        thumbnail: "/images/iphone12.jpg",
-        code: "IP12",
-        stock: 20,
-    });
-
-    const samsungGalaxyS21 = productManager.addProduct({
-        title: "Samsung Galaxy S21",
-        description: "Potente teléfono Android con pantalla Dynamic AMOLED 2X y cámara triple.",
-        price: 899,
-        thumbnail: "/images/samsungS21.jpg",
-        code: "S21",
-        stock: 15,
-    });
-
-    const allProducts = productManager.getProducts();
-    console.log("Todos los teléfonos disponibles:", allProducts);
-
-    const foundProduct = productManager.getProductById(iphone12.id);
-    console.log("Teléfono encontrado por ID:", foundProduct);
-
-    productManager.updateProduct(iphone12.id, { price: 1099 });
-    console.log("Precio actualizado del iPhone 12");
-
-    productManager.deleteProduct(samsungGalaxyS21.id);
-    console.log("Producto Samsung Galaxy S21 eliminado");
-
-} catch (error) {
-    console.error(error.message);
-}
+module.exports = ProductManager;

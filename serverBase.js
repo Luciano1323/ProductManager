@@ -1,35 +1,76 @@
 const express = require('express');
 const ProductManager = require('./ProductManager');
 
-const app = express();
-const port = 3000;
-
-const productManager = new ProductManager('productos.json');
-
-app.get('/products', async (req, res) => {
-    try {
-        const limit = req.query.limit ? parseInt(req.query.limit) : undefined;
-        const products = await productManager.getProducts(limit);
-        res.json(products);
-    } catch (error) {
-        res.status(500).json({ error: 'Internal Server Error' });
+class ServerBase {
+    constructor(port, filePath) {
+        this.port = port;
+        this.filePath = filePath;
+        this.app = express();
+        this.productManager = new ProductManager(filePath);
+        this.setupRoutes();
     }
-});
 
-app.get('/products/:pid', async (req, res) => {
-    try {
-        const productId = req.params.pid;
-        const product = await productManager.getProductById(productId);
-        if (product) {
-            res.json(product);
-        } else {
-            res.status(404).json({ error: 'Product not found' });
-        }
-    } catch (error) {
-        res.status(500).json({ error: 'Internal Server Error' });
+    setupRoutes() {
+        const app = this.app;
+        const productManager = this.productManager;
+
+        app.use(express.json());
+
+        app.get('/productos.json', (req, res) => {
+            try {
+                const products = productManager.getProducts();
+                res.json(products);
+            } catch (error) {
+                res.status(500).json({ error: 'Internal Server Error' });
+            }
+        });
+        
+
+        app.get('/products/:pid', (req, res) => {
+            try {
+                const productId = req.params.pid;
+                const product = productManager.getProductById(productId);
+                if (product) {
+                    res.json(product);
+                } else {
+                    res.status(404).json({ error: 'Product not found' });
+                }
+            } catch (error) {
+                res.status(500).json({ error: 'Internal Server Error' });
+            }
+        });
+
+        app.post('/products', (req, res) => {
+            try {
+                const { title, description, price, thumbnail, code, stock } = req.body;
+                const newProduct = productManager.addProduct({ title, description, price, thumbnail, code, stock });
+                res.status(201).json(newProduct);
+            } catch (error) {
+                res.status(400).json({ error: error.message });
+            }
+        });
+
+        app.delete('/products/:pid', (req, res) => {
+            try {
+                const productId = req.params.pid;
+                productManager.deleteProduct(productId);
+                res.json({ message: 'Product deleted successfully' });
+            } catch (error) {
+                res.status(500).json({ error: 'Internal Server Error' });
+            }
+        });
+        
+
+        app.use((req, res) => {
+            res.status(404).json({ error: 'Route not found' });
+        });
     }
-});
 
-app.listen(port, () => {
-    console.log(`Server is listening at http://localhost:${port}`);
-});
+    start() {
+        this.app.listen(this.port, () => {
+            console.log(`Server is listening at http://localhost:${this.port}`);
+        });
+    }
+}
+
+module.exports = ServerBase;

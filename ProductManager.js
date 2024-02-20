@@ -1,4 +1,5 @@
 const fs = require('fs');
+const { v4: uuidv4 } = require('uuid');
 
 class ProductManager {
     constructor(filePath) {
@@ -29,7 +30,7 @@ class ProductManager {
             throw new Error("Error: Todos los campos son obligatorios.");
         }
 
-        const id = this.generateUniqueId();
+        const id = uuidv4(); // Genera un ID único
         const newProduct = {
             id,
             title,
@@ -74,10 +75,6 @@ class ProductManager {
     deleteProduct(productId) {
         this.products = this.products.filter(product => product.id !== productId);
         this.saveProducts();
-    }
-
-    generateUniqueId() {
-        return this.products.length + 1;
     }
 }
 
